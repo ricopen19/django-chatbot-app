@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<div class="p-3 mb-5">
+    <h1>ChatBotLog</h1>
+</div>
+{% endblock header %}
+
+
+{% block content %}
+
+{% comment %} ユーザーがログインしてれば新規作成ボタンを表示 {% endcomment %}
+{% if user.is_authenticated %}
+<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+    <a href="{% url 'log-new' %}" class="btn btn-outline-success me-3">新規作成</a>
+</div>
+{% endif %}
+
+
+<form method="post" action="{% url 'log-delete' %}">
+    {% csrf_token %}
+    <div class='col-md-10 col-md-offset-1'>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">　</th>
+                    <th scope="col">タイトル</th>
+                    <th scope="col">作成日時</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>
+                        <input type="checkbox" name="log_ids" value="{{ log.id }}">
+                    </td>
+                    <td>
+                        <a href="{% url 'log-detail' log.pk %}">{{ log.id }}. {{ log.title }}</a>
+                    </td>
+                    <th>{{ log.date }}</th>
+                    
+                    <td>
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'log-edit' log.pk %}" class='btn btn-outline-warning'>編集</a>
+                        {% endif %}
+                    </td> 
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+        
+   {% if user.is_authenticated %}
+        <button type="submit" class="btn btn-outline-danger">選択したアイテムを削除</button>
+   {% endif %}
+
+</form>
+
+{% endblock content %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <div class="p-3 mt-3 mb-3">
+        <h1>タスクの削除</h1>
+    </div>
+{% endblock header %}
+
+
+{% block content %}
+
+    {% comment %} フォームの作成 {% endcomment %}
+    <form action="" method='POST'>
+        {% csrf_token %}
+        <p>「{{ log.pk }}.{{ log.title }}」を削除してもいいですか？</p>
+
+        {% comment %} 削除ボタン {% endcomment %}
+        <div class="d-grid gap-2 col-6 mx-left">
+            <input class="btn btn-danger" type="submit" value='削除'>
+        </div>
+    </form>
+
+{% endblock content %}

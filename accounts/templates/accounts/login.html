@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="mt-4">
+    {% comment %} フォームの作成 {% endcomment %}
+    <form action="" method='POST'>
+        {% csrf_token %} 
+        <table class="table">
+            {% comment %} djangoの機能で入力項目を作る {% endcomment %}
+            {{form.as_table}}
+        </table>
+        <div class="d-grid gap-2 col-6 mx-left">
+            {% comment %} 送信ボタン {% endcomment %}
+            <input class="btn btn-success" type="submit" value='送信'>
+        </div>
+    </form>
+</div>
+
+{% endblock content %}

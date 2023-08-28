@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block header %}
+<div class="p-3 mb-5">
+    <h2>{{ log.title }}</h2>
+</div>
+{% endblock header %}
+
+{% block content %}
+
+    <div class="card mb-5">
+        <div class="card-body">
+            {% comment %} 変数objectの代わりにlogを使った {% endcomment %}
+                <p>{{ log.text | linebreaksbr }}</p>
+                <p class="text-muted">{{ log.date }}</p>
+                {% if user.is_authenticated %}
+                
+                <form method="post" action="{% url 'log-delete' %}">
+                        <a href="{% url 'log-edit' log.pk %}" class="btn btn-outline-warning">編集</a>
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger">削除</button>
+                        <input type="checkbox" name="log_ids" value="{{ log.id }}">
+                    </form>
+                {% endif %}
+        </div>
+    </div>
+
+
+{% endblock content %}

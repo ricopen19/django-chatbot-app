@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<div class="p-3 mt-3 mb-3">
+    <h1>New Chat</h1>
+</div>
+
+{% endblock header %}
+{% block content %} 
+
+
+<div class="row">
+    <div class="col-lg-5">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">ファイル名</th>
+                    <th scope="col">日時</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for file in files %}
+                <tr>
+                    <td>
+                        {{ file.file_name }}
+                    </td>
+                    <td>
+                        {{ file.upload_date }}
+                    </td>
+                <td>
+                    <a href="{% url 'file-delete' file.id %}" class='btn btn-outline-danger'>削除</a>
+                </td> 
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <form method="post" action="{% url 'chat-view' %}" enctype="multipart/form-data"> 
+        {% csrf_token %}
+        {{ file_form.as_p }}
+    
+        <button type="submit" class="btn btn-sm btn-primary" name="action" value="upload">アップロード</button>    
+    </form>
+
+</div>
+
+
+
+<div class="col-lg-7 mb-5">
+    <a href="{% url 'chat-delete' %}" class="btn btn-outline-danger">ログを削除</a>
+    {% for user_message, ai_message in chat_session %}
+        <div class="card">
+            <ul class="list-group list-group-flush">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">USER: {{ user_message| linebreaks }} </li>
+                    <li class="list-group-item">AI: {{ ai_message| linebreaks }} </li>
+                </ul>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="my-5">
+</div>
+
+
+<div class="fixed-bottom text-center bg-white">
+    {% if messages %}
+        <ul class="list-unstyled">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    
+    <form method="post" action="{% url 'chat-view' %}">
+        {% csrf_token %}
+        {{ log_form.as_p }}
+
+
+        <div class="d-grid gap-2 col-3 mx-auto">
+            <button type="submit" name="action" value="send">送信</button>
+            <button type="submit" name="action" value="save">保存</button>
+        </div>
+    </form>
+</div>
+    
+
+    
+{% endblock %}
