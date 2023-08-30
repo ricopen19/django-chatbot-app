@@ -4,5 +4,4 @@ media
 __pycache__
 
 # files
-db.sqlite3
 .env
