@@ -20,7 +20,8 @@ def respond(message, chat_history, index):
 def initialize(message, chat_history):
     dotenv_path = join(dirname(__file__), '../.env')
     load_dotenv(dotenv_path)
-    api_key = os.environ["OPENAI_API_KEY"]
+    open_api_key = os.environ["OPENAI_API_KEY"]
+    serp_api_key = os.environ["SERPAPI_API_KEY"]
     app_env = os.environ.get('APP_ENV', 'production')
 
     index = create_index()

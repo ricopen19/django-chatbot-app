@@ -14,6 +14,9 @@ from langchain.tools import BaseTool
 from langchain.memory import ConversationBufferMemory
 from langchain.agents import initialize_agent
 from langchain.agents import AgentType
+from langchain.utilities import SerpAPIWrapper
+from langchain.agents import Tool
+from langchain.agents.mrkl import prompt
 
 
 langchain.verbose = True
@@ -26,7 +29,7 @@ def create_index() -> VectorStoreIndexWrapper:
 
 
 # indexを元にツールを作る関数
-def create_tools(index: VectorStoreIndexWrapper) -> List[BaseTool]:
+def create_tools(index: VectorStoreIndexWrapper) -> [BaseTool]:
     vectorstore_info = VectorStoreInfo(
         # VectoreStoreの情報
         name="udemy-langchain source code",
@@ -44,26 +47,35 @@ def chat(message: str, history: ChatMessageHistory,
 
     tools = create_tools(index)
 
+    search = SerpAPIWrapper()
+    tools.append(
+        Tool.from_function(
+            name="Search",
+            func=search.run,
+            description="useful for when you need to answer questions about current events"
+        )
+    )
+
     memory = ConversationBufferMemory(
         chat_memory=history, memory_key="chat_history", return_messages=True
         )
 
-    agent_kwargs = {
-        "suffix": """開始!ここからの会話は全て日本語で行われる。
+    # agent_kwargs = {
+    #     "suffix": """開始!ここからの会話は全て日本語で行われる。
 
-        以前のチャット履歴
-        {chat_history}
+    #     以前のチャット履歴
+    #     {chat_history}
 
-        新しいインプット: {input}
-        {agent_scratchpad}""",
-    }
+    #     新しいインプット: {input}
+    #     {agent_scratchpad}""",
+    # }
 
     agent_chain = initialize_agent(
         tools,
         llm,
-        agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
+        agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
         memory=memory,
-        agent_kwargs=agent_kwargs
+        agent_kwargs=dict(suffix='Answer should be in Japanese.' + prompt.SUFFIX)
         )
 
     # llm=llmとしないと別のモデルを使用してしまう
