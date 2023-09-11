@@ -43,7 +43,7 @@ def create_tools(index: VectorStoreIndexWrapper) -> [BaseTool]:
 
 def chat(message: str, history: ChatMessageHistory,
          index: VectorStoreIndexWrapper) -> str:
-    llm = ChatOpenAI(model_name='gpt-3.5-turbo', temperature=0)
+    llm = ChatOpenAI(model_name='gpt-3.5-turbo', temperature=0, stream=True)
 
     tools = create_tools(index)
 
