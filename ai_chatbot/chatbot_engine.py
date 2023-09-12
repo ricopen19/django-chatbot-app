@@ -17,6 +17,7 @@ from langchain.agents import AgentType
 from langchain.utilities import SerpAPIWrapper
 from langchain.agents import Tool
 from langchain.agents.mrkl import prompt
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
 
 langchain.verbose = True
@@ -41,9 +42,22 @@ def create_tools(index: VectorStoreIndexWrapper) -> [BaseTool]:
     return toolkit.get_tools()
 
 
+# class StreamHandler(BaseCallbackHandler):
+#     def __init__(self, init_text=""):
+#         self.text = init_text
+
+#     def on_llm_new_token(self, token: str, **kwargs) -> None:
+#         self.text += token
+
+
 def chat(message: str, history: ChatMessageHistory,
          index: VectorStoreIndexWrapper) -> str:
-    llm = ChatOpenAI(model_name='gpt-3.5-turbo', temperature=0, stream=True)
+
+    llm = ChatOpenAI(
+        model_name='gpt-3.5-turbo',
+        temperature=0,
+        streaming=True,
+        callbacks=[StreamingStdOutCallbackHandler()])
 
     tools = create_tools(index)
 
@@ -60,16 +74,6 @@ def chat(message: str, history: ChatMessageHistory,
         chat_memory=history, memory_key="chat_history", return_messages=True
         )
 
-    # agent_kwargs = {
-    #     "suffix": """開始!ここからの会話は全て日本語で行われる。
-
-    #     以前のチャット履歴
-    #     {chat_history}
-
-    #     新しいインプット: {input}
-    #     {agent_scratchpad}""",
-    # }
-
     agent_chain = initialize_agent(
         tools,
         llm,
@@ -78,10 +82,9 @@ def chat(message: str, history: ChatMessageHistory,
         agent_kwargs=dict(suffix='Answer should be in Japanese.' + prompt.SUFFIX)
         )
 
-    # llm=llmとしないと別のモデルを使用してしまう
     return agent_chain.run(input=message)
 
-
+    # llm=llmとしないと別のモデルを使用してしまう
 #     return index.query(question=message, llm=llm)
 
     # # historyからメッセージ一覧を取り出す
