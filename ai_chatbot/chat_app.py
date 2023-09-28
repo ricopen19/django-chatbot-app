@@ -25,7 +25,7 @@ def initialize(message, chat_history):
     app_env = os.environ.get('APP_ENV', 'production')
 
     index = create_index()
-    respond(message, chat_history, index)
+    chat_history = respond(message, chat_history, index)
     return chat_history
 
     # index = create_index()

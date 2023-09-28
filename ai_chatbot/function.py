@@ -23,7 +23,7 @@ def chat_log(input_data, request, chat_session):
     return render(
         request, 'ai_chatbot/chat.html',
         {
-            'chat_session': chat_session
+            'chat_session': chat_session,
         },
         )
 

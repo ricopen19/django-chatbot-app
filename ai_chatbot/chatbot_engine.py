@@ -9,7 +9,8 @@ from langchain.agents.agent_toolkits import (
     VectorStoreToolkit,
     VectorStoreInfo,
 )
-from typing import List
+from langchain.callbacks.base import BaseCallbackHandler
+from typing import Any
 from langchain.tools import BaseTool
 from langchain.memory import ConversationBufferMemory
 from langchain.agents import initialize_agent
@@ -42,12 +43,10 @@ def create_tools(index: VectorStoreIndexWrapper) -> [BaseTool]:
     return toolkit.get_tools()
 
 
-# class StreamHandler(BaseCallbackHandler):
-#     def __init__(self, init_text=""):
-#         self.text = init_text
-
-#     def on_llm_new_token(self, token: str, **kwargs) -> None:
-#         self.text += token
+class StreamHandler(BaseCallbackHandler):
+    def on_llm_new_token(self, token: str, **kwargs) -> Any:
+        print(f"on_new_token {token}")
+        return token
 
 
 def chat(message: str, history: ChatMessageHistory,
@@ -57,7 +56,7 @@ def chat(message: str, history: ChatMessageHistory,
         model_name='gpt-3.5-turbo',
         temperature=0,
         streaming=True,
-        callbacks=[StreamingStdOutCallbackHandler()])
+        callbacks=[StreamingStdOutCallbackHandler()]) 
 
     tools = create_tools(index)
 
